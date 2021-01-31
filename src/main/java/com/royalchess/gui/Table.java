@@ -19,9 +19,7 @@ import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
+import java.util.*;
 import java.util.List;
 
 import static javax.swing.SwingUtilities.isLeftMouseButton;
@@ -41,11 +39,12 @@ public class Table {
     private Piece humanMovedPiece;
 
     private boolean highlightLegalMoves;
+    private int pieceLoadController;
 
     private final static Dimension OUTER_FRAME_DIMENSION = new Dimension(750,600);
     private final static Dimension BOARD_PANEL_DIMENSION = new Dimension(400,350);
     private final static Dimension TILE_PANEL_DIMENSION = new Dimension(10,10);
-    private static String defaultPieceImagePath ="../art/";
+
 
     private final Color lightTileColor = Color.decode("#F7F7FF");
     private final Color darkTileColor =  Color.decode("#577399");
@@ -58,11 +57,13 @@ public class Table {
         this.gameFrame.setJMenuBar(tableMenuBar);
         this.gameFrame.setLayout(new BorderLayout());
         this.gameFrame.setSize(OUTER_FRAME_DIMENSION);
+        this.pieceLoadController = 0;
         this.chessBoard = Board.createStandardBoard();
+
         this.gameHistoryPanel = new GameHistoryPanel();
         this.takenPiecesPanel = new TakenPiecesPanel();
-        this.boardPanel = new BoardPanel();
         this.moveLog = new MoveLog();
+        this.boardPanel = new BoardPanel();
         this.gameFrame.add(this.takenPiecesPanel, BorderLayout.WEST);
         this.gameFrame.add(this.boardPanel, BorderLayout.CENTER);
         this.gameFrame.add(this.gameHistoryPanel, BorderLayout.EAST);
@@ -126,10 +127,11 @@ public class Table {
     private class BoardPanel extends JPanel {
         final List<TilePanel> boardTiles;
 
+
         BoardPanel() throws IOException {
-            super(new GridLayout(8,8));
+            super(new GridLayout(8, 8));
             this.boardTiles = new ArrayList<>();
-            for(int i =0; i < BoardUtils.NUM_TILES; i++) {
+            for (int i = 0; i < BoardUtils.NUM_TILES; i++) {
                 final TilePanel tilePanel = new TilePanel(this, i);
                 this.boardTiles.add(tilePanel);
                 add(tilePanel);
@@ -142,7 +144,7 @@ public class Table {
 
         public void drawBoard(final Board board) throws IOException {
             removeAll();
-            for(final TilePanel tilePanel : boardTiles) {
+            for (final TilePanel tilePanel : boardTiles) {
                 tilePanel.drawTile(board);
                 add(tilePanel);
             }
@@ -152,36 +154,37 @@ public class Table {
         }
 
         public void isWin(final Board board) throws IOException {
-            if(board.getCurrentPlayer().isInCheckMate()){
+            if (board.getCurrentPlayer().isInCheckMate()) {
                 String message;
-                if(board.getCurrentPlayer().getAlliance() == Alliance.BLACK) {
+                if (board.getCurrentPlayer().getAlliance() == Alliance.BLACK) {
                     message = "White wins!";
-                }
-                else {
+                } else {
                     message = "Black wins!";
                 }
+                SFXUtils.playSound("win");
                 displayWinPopUp(message);
+
 
             }
         }
 
         public void displayWinPopUp(final String message) throws IOException {
-            Object[] options = {"Rematch","Exit"};
-            int result = JOptionPane.showOptionDialog(gameFrame,message,"Checkmate!", JOptionPane.YES_NO_CANCEL_OPTION,
-                    JOptionPane.PLAIN_MESSAGE,null,options,options[1]);
+            Object[] options = {"Rematch", "Exit"};
+            int result = JOptionPane.showOptionDialog(gameFrame, message, "Checkmate!", JOptionPane.YES_NO_CANCEL_OPTION,
+                    JOptionPane.PLAIN_MESSAGE, null, options, options[1]);
             if (result == JOptionPane.YES_OPTION) {
                 chessBoard = Board.createStandardBoard();
                 moveLog.clear();
                 takenPiecesPanel.redo(moveLog);
+                pieceLoadController = 0;
                 boardPanel.drawBoard(chessBoard);
                 gameHistoryPanel.redo(chessBoard, moveLog);
-            }
-            else if (result == JOptionPane.NO_OPTION) {
+            } else if (result == JOptionPane.NO_OPTION) {
                 System.exit(0);
             }
         }
-
     }
+
 
     public static class MoveLog {
         private final List<Move> moves;
@@ -190,6 +193,9 @@ public class Table {
         }
         public List<Move> getMoves() {
             return this.moves;
+        }
+        public Move getMove(final int index) {
+            return this.moves.get(index);
         }
         public void addMove(final Move move) {
             this.moves.add(move);
@@ -226,7 +232,6 @@ public class Table {
                         sourceTile = null;
                         destinationTile = null;
                         humanMovedPiece = null;
-                        //remove highlights if piece is deselected
                         try {
                             boardPanel.drawBoard(chessBoard);
                         } catch (IOException ioException) {
@@ -245,12 +250,14 @@ public class Table {
                             System.out.println("piece selected");
                         }
                         else {
+                            //second click
                             destinationTile = chessBoard.getTile(tileId);
                             final Move move = Move.MoveFactory.createMove(chessBoard, sourceTile.getTileCoordinate(), destinationTile.getTileCoordinate());
                             final MoveTransition transition = chessBoard.getCurrentPlayer().makeMove(move);
                             if (transition.getMoveStatus() == MoveStatus.DONE) {
                                 chessBoard = transition.getTransitionBoard();
                                 moveLog.addMove(move);
+                                SFXUtils.playSound("move");
                                 System.out.println(chessBoard);
                                 System.out.println("█████ move done: " + move.toString() + " █████");
 
@@ -258,6 +265,7 @@ public class Table {
                             sourceTile = null;
                             destinationTile = null;
                             humanMovedPiece = null;
+
                         }
                         SwingUtilities.invokeLater(new Runnable() {
                             @Override
@@ -300,8 +308,6 @@ public class Table {
             assignTilePieceIcon(board);
             highlightTileBorder(board);
             highlightLegals(board);
-            validate();
-            repaint();
         }
 
         private void highlightTileBorder(final Board board) {
@@ -315,13 +321,27 @@ public class Table {
         }
 
         private void assignTilePieceIcon(final Board board) throws IOException {
-            this.removeAll();
-            if(board.getTile(this.tileId).isTileOccupied()) {
-                final BufferedImage image = ImageIO.read(new File(defaultPieceImagePath + board.getTile(this.tileId).getPiece().getPieceAlliance().toString().substring(0,1)
-                + board.getTile(this.tileId).getPiece().toString() + ".png"));
+            if(pieceLoadController < 32 && moveLog.size() == 0 && board.getTile(this.tileId).isTileOccupied()) {
+                this.removeAll();
+                final BufferedImage image = ImageIO.read(new File("../art/" + board.getTile(this.tileId).getPiece().getPieceAlliance().toString().substring(0,1)
+                        + board.getTile(this.tileId).getPiece().toString() + ".png"));
+                Image dimg = image.getScaledInstance(60 ,60, Image.SCALE_SMOOTH);
+                add(new JLabel(new ImageIcon(dimg)));
+                pieceLoadController++;
+            }
+
+            if(moveLog.getMoves().size() >  0 && board.getTile(this.tileId).getPiece() != null &&
+                    board.getTile(this.tileId).getPiece().getPiecePosition() == moveLog.getMove(moveLog.size()-1).getDestinationCoordinate()) {
+                this.removeAll();
+                final BufferedImage image = ImageIO.read(new File("../art/" + board.getTile(this.tileId).getPiece().getPieceAlliance().toString().substring(0,1)
+                        + board.getTile(this.tileId).getPiece().toString() + ".png"));
                 Image dimg = image.getScaledInstance(60 ,60, Image.SCALE_SMOOTH);
                 add(new JLabel(new ImageIcon(dimg)));
             }
+            if(!board.getTile(this.tileId).isTileOccupied()) {
+                this.removeAll();
+            }
+
         }
 
         private void assignTileColor() {
@@ -364,5 +384,7 @@ public class Table {
             }
             return Collections.emptyList();
         }
+
+
     }
 }

@@ -41,8 +41,8 @@ public class Pawn extends Piece {
                 }
 
             }
-            else if(currentCandidateOffset == 16 && this.isFirstMove() && ((/*BoardUtils.SEVENTH_RANK[this.piecePosition] &&*/ this.getPieceAlliance() == Alliance.BLACK) ||
-                    (/*BoardUtils.SECOND_RANK[this.piecePosition] &&*/ this.getPieceAlliance() == Alliance.WHITE))) {
+            else if(currentCandidateOffset == 16 && this.isFirstMove() && (( this.getPieceAlliance() == Alliance.BLACK) ||
+                    (this.getPieceAlliance() == Alliance.WHITE))) {
                 final int behindCandidateDestinationCoordinate = this.piecePosition + (this.getPieceAlliance().getDirection() *8);
                 if(!board.getTile(behindCandidateDestinationCoordinate).isTileOccupied() && !board.getTile(candidateDestinationCoordinate).isTileOccupied()) {
                     legalMoves.add(new Move.PawnJumpMove(board, this, candidateDestinationCoordinate));

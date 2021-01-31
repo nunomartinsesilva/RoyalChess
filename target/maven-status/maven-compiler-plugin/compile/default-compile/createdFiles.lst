@@ -36,6 +36,7 @@ com\royalchess\engine\player\Alliance.class
 com\royalchess\engine\move\MoveStatus.class
 com\royalchess\engine\player\Player.class
 com\royalchess\engine\move\Move$PawnPromotion.class
+com\royalchess\gui\SFXUtils.class
 com\royalchess\engine\pieces\Bishop.class
 com\royalchess\engine\pieces\Rook.class
 com\royalchess\engine\move\Move$NullMove.class
