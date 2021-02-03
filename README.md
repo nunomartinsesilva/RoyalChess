@@ -21,7 +21,6 @@ on a terminal window.
 
 
 ### Future Updates
-+ Sound Effects.
 + GUI revamp (cleaner, faster UI, allows Drag and Drop moves).
 + Piece promotion panel (currently, any Pawn will be promoted automatically to a Queen).
 + Move timer.
