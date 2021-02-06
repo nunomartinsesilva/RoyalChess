@@ -102,6 +102,17 @@ public abstract class Move {
         return builder.build();
     }
 
+    String disambiguationFile() {
+        for(final Move move : this.board.getCurrentPlayer().getLegalMoves()) {
+            if(move.getDestinationCoordinate() == this.destinationCoordinate && !this.equals(move) &&
+                    this.movedPiece.getPieceType().equals(move.getMovedPiece().getPieceType())) {
+                return BoardUtils.getPositionAtCoordinate(this.movedPiece.getPiecePosition()).substring(0, 1);
+            }
+        }
+        return "";
+    }
+
+
     public static final class MajorMove extends Move {
 
         public MajorMove(final Board board, final Piece movedPiece, final int destinationCoordinate) {
@@ -115,7 +126,7 @@ public abstract class Move {
 
         @Override
         public String toString() {
-            return movedPiece.getPieceType().toString() + BoardUtils.getPositionAtCoordinate(this.destinationCoordinate);
+            return " " + movedPiece.getPieceType().toString() + disambiguationFile() + BoardUtils.getPositionAtCoordinate(this.destinationCoordinate);
         }
     }
 
@@ -170,7 +181,7 @@ public abstract class Move {
 
         @Override
         public String toString() {
-            return movedPiece.getPieceType() + BoardUtils.getPositionAtCoordinate(this.destinationCoordinate);
+            return " " + movedPiece.getPieceType() + disambiguationFile() + "x"  + BoardUtils.getPositionAtCoordinate(this.destinationCoordinate);
         }
 
     }
@@ -188,7 +199,7 @@ public abstract class Move {
 
         @Override
         public String toString() {
-            return BoardUtils.getPositionAtCoordinate(this.destinationCoordinate);
+            return " " + BoardUtils.getPositionAtCoordinate(this.destinationCoordinate);
         }
 
     }
@@ -206,7 +217,7 @@ public abstract class Move {
 
         @Override
         public String toString() {
-            return BoardUtils.getPositionAtCoordinate(this.movedPiece.getPiecePosition()).substring(0,1) + "x" + BoardUtils.getPositionAtCoordinate(this.destinationCoordinate);
+            return " " + BoardUtils.getPositionAtCoordinate(this.movedPiece.getPiecePosition()).substring(0,1) + "x" + BoardUtils.getPositionAtCoordinate(this.destinationCoordinate);
         }
 
     }
@@ -284,7 +295,7 @@ public abstract class Move {
 
         @Override
         public String toString(){
-            return "";
+            return " " + BoardUtils.getPositionAtCoordinate(this.destinationCoordinate) + "=" + this.promotedPawn.getPromotionPiece().getPieceType();
         }
 
         @Override
@@ -325,7 +336,7 @@ public abstract class Move {
 
         @Override
         public String toString(){
-            return BoardUtils.getPositionAtCoordinate(this.destinationCoordinate);
+            return " " + BoardUtils.getPositionAtCoordinate(this.destinationCoordinate);
         }
 
     }
@@ -415,7 +426,7 @@ public abstract class Move {
 
         @Override
         public String toString() {
-            return "O-O";
+            return " " + "O-O";
         }
 
 
@@ -437,7 +448,7 @@ public abstract class Move {
 
         @Override
         public String toString() {
-            return "O-O-O";
+            return " " + "O-O-O";
         }
 
     }
