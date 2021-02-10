@@ -324,7 +324,7 @@ public class ChessBoard extends JFrame implements MouseListener, MouseMotionList
 
                 if(move.getAttackedPiece() == null) {
 
-                    ImageIcon dotIcon = new ImageIcon("../art/misc/grey_dot.png"); // add an image here
+                    ImageIcon dotIcon = new ImageIcon("../art/misc/golden_dot.png"); // add an image here
                     JLabel dot = new JLabel( dotIcon );
                     JPanel panel = (JPanel)chessBoard.getComponent( move.getDestinationCoordinate() );
                     panel.add(dot);

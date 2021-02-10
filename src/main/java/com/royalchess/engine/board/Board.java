@@ -42,8 +42,6 @@ public class Board {
         for (final Piece piece : pieces) {
             legalMoves.addAll(piece.calculateLegalMoves(this));
         }
-
-        //return Collections.unmodifiableList(legalMoves);
         return legalMoves;
     }
 
@@ -59,7 +57,6 @@ public class Board {
                 }
             }
         }
-        //return Collections.unmodifiableList(activePieces);
         return activePieces;
     }
 
@@ -97,7 +94,6 @@ public class Board {
         for (int i=0; i<NUM_TILES; i++ ) {
             tiles[i] = Tile.createTile(i,builder.boardConfig.get(i));
         }
-        //return Collections.unmodifiableList(Arrays.asList(tiles));
         List<Tile> newList = new ArrayList<>();
         newList.addAll(Arrays.asList(tiles));
         return newList;
