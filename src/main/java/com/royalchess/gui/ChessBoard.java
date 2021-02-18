@@ -59,7 +59,7 @@ public class ChessBoard extends JFrame implements MouseListener, MouseMotionList
         add(this.moveHistory, BorderLayout.EAST);
         this.popUp=false;
         chessBoard.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        chessBoard.setBackground(Color.decode("#1b1a1c"));
+        chessBoard.setBackground(Color.decode("#002466"));
 
 
         for (int i = 0; i < 8; i++) {
@@ -232,9 +232,8 @@ public class ChessBoard extends JFrame implements MouseListener, MouseMotionList
             final MoveTransition transition = gameBoard.getCurrentPlayer().makeMove(move);
             if (transition.getMoveStatus() == MoveStatus.DONE) {
                 gameBoard = transition.getTransitionBoard();
-                SFXUtils.playSound("move");
                 System.out.println(gameBoard);
-                System.out.println("█████ move done:" + move.toString() + " █████");
+                System.out.println("  ■Move done:" + move.toString() +"\n");
                 SFXUtils.playSound("move");
                 moveLog.addMove(move);
                 moveHistory.printMove(moveLog,gameBoard);

@@ -29,7 +29,7 @@ public class MoveHistory extends JPanel {
         scrollPane.setPreferredSize(new Dimension(300, 575));
         this.add(scrollPane,BorderLayout.SOUTH);
         this.setVisible(true);
-        setBackground(Color.decode("#1b1a1c"));
+        setBackground(Color.decode("#002466"));
     }
 
     public void printMove(ChessBoard.MoveLog movelog, Board board) {
