@@ -16,7 +16,7 @@ on a terminal window.
 
 
 ### Known Bugs
-+ None.
++ EnPassant Moves displaying incorrectly on MoveHistory.
 
 
 ### Future Updates
