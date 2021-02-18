@@ -16,8 +16,7 @@ on a terminal window.
 
 
 ### Known Bugs
-+ Move history panel takes one move to reset, after hitting "play again" button.
-+ Some moves do not display on Move history panel.
++ None.
 
 
 ### Future Updates
