@@ -79,6 +79,8 @@ public abstract class Move {
         return false;
     }
 
+    public boolean isPromotion() {return false;}
+
     public Piece getAttackedPiece() {
         return null;
     }
@@ -251,6 +253,10 @@ public abstract class Move {
             return builder.build();
 
         }
+        @Override
+        public String toString() {
+            return " " + BoardUtils.getPositionAtCoordinate(this.movedPiece.getPiecePosition()).substring(0,1) + "x" + BoardUtils.getPositionAtCoordinate(this.destinationCoordinate);
+        }
 
     }
 
@@ -258,11 +264,13 @@ public abstract class Move {
 
         final Move decoratedMove;
         final Pawn promotedPawn;
+        final Piece promotionPiece;
 
-        public PawnPromotion(final Move decoratedMove) {
+        public PawnPromotion(final Move decoratedMove,final Piece promotionPiece) {
             super(decoratedMove.getBoard(), decoratedMove.getMovedPiece(), decoratedMove.getDestinationCoordinate());
             this.decoratedMove = decoratedMove;
             this.promotedPawn = (Pawn) decoratedMove.getMovedPiece();
+            this.promotionPiece = promotionPiece;
         }
 
         @Override
@@ -278,7 +286,7 @@ public abstract class Move {
             for(final Piece piece : pawnMovedBoard.getCurrentPlayer().getOpponent().getActivePieces()) {
                 builder.setPiece(piece);
             }
-            builder.setPiece(this.promotedPawn.getPromotionPiece().movePiece(this));
+            builder.setPiece(this.promotionPiece.movePiece(this));
             builder.setNextMoveMaker(pawnMovedBoard.getCurrentPlayer().getAlliance());
             return builder.build();
         }
@@ -289,13 +297,16 @@ public abstract class Move {
         }
 
         @Override
+        public boolean isPromotion() { return true;}
+
+        @Override
         public Piece getAttackedPiece(){
             return this.decoratedMove.getAttackedPiece();
         }
 
         @Override
         public String toString(){
-            return " " + BoardUtils.getPositionAtCoordinate(this.destinationCoordinate) + "=" + this.promotedPawn.getPromotionPiece().getPieceType();
+            return " " + BoardUtils.getPositionAtCoordinate(this.destinationCoordinate) + "=" + this.promotionPiece.getPieceType();
         }
 
         @Override
@@ -485,8 +496,23 @@ public abstract class Move {
 
         public static Move createMove(final Board board, final int currentCoordinate, final int destinationCoordinate) {
             for (final Move move : board.getAllLegalMoves()) {
+
                 if(move.getCurrentCoordinate() == currentCoordinate && move.getDestinationCoordinate() == destinationCoordinate) {
                     return move;
+                }
+            }
+            return NULL_MOVE;
+        }
+        public static Move createPromotionMove(final Board board, final int currentCoordinate, final int destinationCoordinate, final int pieceSelected) {
+            int counter = 0;
+            for (final Move move : board.getAllLegalMoves()) {
+                if(move.getCurrentCoordinate() == currentCoordinate && move.getDestinationCoordinate() == destinationCoordinate) {
+                    if(counter == pieceSelected) {
+                        return move;
+                    }
+                    else {
+                        counter++;
+                    }
                 }
             }
             return NULL_MOVE;

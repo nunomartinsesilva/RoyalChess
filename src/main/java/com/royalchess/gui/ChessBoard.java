@@ -228,7 +228,10 @@ public class ChessBoard extends JFrame implements MouseListener, MouseMotionList
 
                 }
             }
-            final Move move = Move.MoveFactory.createMove(gameBoard, sourceTile.getTileCoordinate(), destinationTile.getTileCoordinate());
+            Move move = Move.MoveFactory.createMove(gameBoard, sourceTile.getTileCoordinate(), destinationTile.getTileCoordinate());
+            if (move.isPromotion() && move.getMovedPiece().getPieceAlliance() == gameBoard.getCurrentPlayer().getAlliance() && !gameBoard.getCurrentPlayer().isInCheck()) {
+                move = Move.MoveFactory.createPromotionMove(gameBoard, sourceTile.getTileCoordinate(), destinationTile.getTileCoordinate(),displayPromotionPopUp());
+            }
             final MoveTransition transition = gameBoard.getCurrentPlayer().makeMove(move);
             if (transition.getMoveStatus() == MoveStatus.DONE) {
                 gameBoard = transition.getTransitionBoard();
@@ -284,8 +287,6 @@ public class ChessBoard extends JFrame implements MouseListener, MouseMotionList
             }
             SFXUtils.playSound("win");
             displayWinPopUp(message);
-
-
         }
     }
 
@@ -310,6 +311,17 @@ public class ChessBoard extends JFrame implements MouseListener, MouseMotionList
         } else if (result == JOptionPane.NO_OPTION) {
             System.exit(0);
         }
+    }
+
+
+    public int displayPromotionPopUp()  {
+        popUp=true;
+        Object[] options = {"Knight","Bishop", "Rook", "Queen"};
+        int result = JOptionPane.showOptionDialog(layeredPane, "Choose promotion piece:", "Pawn promoted!", JOptionPane.DEFAULT_OPTION,
+                JOptionPane.PLAIN_MESSAGE, null, options, options[3]);
+        popUp = false;
+        return result;
+
     }
 
 
