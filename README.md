@@ -1,4 +1,7 @@
-# RoyalChess
+
+
+![](art/misc/royalheader.png)
+
 
 RoyalChess is a fully functional chess engine that allows you to challenge your chess friends locally. This engine was built using core Java, Swing GUI and jUnit for testing.
 
@@ -11,7 +14,7 @@ java -jar RoyalChess-1.3-SNAPSHOT.jar
 ```
 on a terminal window.
 
-
+![](art/misc/royalgameplay.png)
 
 ### Known Bugs
 + None.
